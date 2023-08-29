@@ -26,7 +26,9 @@ def create(request):
         if form.is_valid():
             article = form.save(commit=False)
 
-            article.user = request.user
+            # article.user_id = request.user.id
+
+            article.user = request.user 
 
             article.save()
 

@@ -6,12 +6,22 @@ from django.contrib.auth import logout as auth_logout
 # Create your views here.
 
 def signup(request):
+    if request.user.is_authenticated:
+        return redirect('articles:index') 
+
     if request.method == 'POST':
         form = CustomUserCreationForm(request.POST)
 
         if form.is_valid():
-            form.save()
-            return redirect('accounts:signup')
+
+        # 회원가입시 자동 로그인 후 index로 
+            user = form.save()
+            auth_login(request,user)
+            return redirect('articles:index')
+
+        # 회원가입시 로그인 창으로
+            # form.save()
+            # return redirect('accounts:login')
     else:
         form = CustomUserCreationForm()
 
@@ -19,10 +29,13 @@ def signup(request):
         'form': form
     }
 
-    return render(request, 'signup.html', context)
+    return render(request, 'account_form.html', context)
 
 
 def login(request):
+    if request.user.is_authenticated:
+        return redirect('articles:index') 
+
     if request.method == 'POST':
         form = CustomAuthenticationForm(request, request.POST)
 
@@ -47,7 +60,7 @@ def login(request):
         'form': form
     }
 
-    return render(request, 'login.html', context)
+    return render(request, 'account_form.html', context)
 
 def logout(request):
     auth_logout(request)
